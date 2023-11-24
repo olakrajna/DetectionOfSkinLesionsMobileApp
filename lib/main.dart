@@ -7,10 +7,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mcapp/home.dart';
 import 'package:mcapp/onboard.dart';
+import 'package:mcapp/photo_server.dart';
 import 'package:mcapp/splashscreen.dart';
 import 'package:tflite/tflite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 
 bool? seenOnboard;
 
@@ -289,6 +292,7 @@ class ImagePickerDemo extends StatefulWidget {
 
 class _ImagePickerDemoState extends State<ImagePickerDemo> {
   final ImagePicker _picker = ImagePicker();
+  final HttpUploadService _httpUploadService = HttpUploadService();
   XFile? _image;
   File? file;
   var _recognitions;
@@ -309,6 +313,36 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     );
   }
 
+  Future<void> presentAlert(BuildContext context,
+      {String title = '', String message = '', Function()? ok}) {
+    return showDialog(
+        context: context,
+        builder: (c) {
+          return AlertDialog(
+            title: Text('$title'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  child: Text('$message'),
+                )
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'OK',
+                  // style: greenText,
+                ),
+                onPressed: ok != null ? ok : Navigator.of(context).pop,
+              ),
+            ],
+          );
+        });
+  }
+
+
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -316,6 +350,15 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
         _image = image;
         file = File(image!.path);
       });
+
+      String filePath = file!.path;
+
+      var responseDataHttp = await _httpUploadService.uploadPhotos([filePath]);
+
+      await presentAlert(context as BuildContext,
+          title: 'Success HTTP',
+          message: responseDataHttp);
+
       detectimage(file!);
     } catch (e) {
       print('Error picking image: $e');
@@ -344,11 +387,12 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     print("Inference took ${endTime - startTime}ms");
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
+      backgroundColor: Colors.white,
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -363,10 +407,10 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
               Text('No image selected',
                 style: TextStyle(
                     color: Colors.grey.shade400,
-                     fontSize: 20),),
+                    fontSize: 20),),
             SizedBox(height: 20),
             GestureDetector(
-            onTap: _pickImage,
+                onTap: _pickImage,
                 child: Container(
                     alignment: Alignment.center,
                     width: 250,
@@ -402,7 +446,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
                               color: Colors.white, fontSize: 18),
                         ),
                         Icon(Icons.linked_camera_outlined, color: Colors.white,
-                            ),
+                        ),
                       ],
                     ))),
             SizedBox(height: 20),
@@ -453,10 +497,10 @@ class _ImageCaptureState extends State<ImageCapture> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center( // Wyśrodkowanie całej zawartości
-        child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
                     height:300,
                     width:400,
                     child: imageController == null?
