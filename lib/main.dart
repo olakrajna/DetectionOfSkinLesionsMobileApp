@@ -9,7 +9,7 @@ import 'package:mcapp/home.dart';
 import 'package:mcapp/onboard.dart';
 import 'package:mcapp/photo_server.dart';
 import 'package:mcapp/splashscreen.dart';
-import 'package:tflite/tflite.dart';
+// import 'package:tflite/tflite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
@@ -295,23 +295,12 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   final HttpUploadService _httpUploadService = HttpUploadService();
   XFile? _image;
   File? file;
-  var _recognitions;
-  var v = "";
-  // var dataList = [];
+
   @override
   void initState() {
     super.initState();
-    loadmodel().then((value) {
-      setState(() {});
-    });
   }
 
-  loadmodel() async {
-    await Tflite.loadModel(
-      model: "assets/model9.tflite",
-      labels: "assets/labels9.txt",
-    );
-  }
 
   Future<void> presentAlert(BuildContext context,
       {String title = '', String message = '', Function()? ok}) {
@@ -358,35 +347,10 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       await presentAlert(context as BuildContext,
           title: 'Success HTTP',
           message: responseDataHttp);
-
-      detectimage(file!);
     } catch (e) {
       print('Error picking image: $e');
     }
   }
-
-  Future detectimage(File image) async {
-    int startTime = new DateTime.now().millisecondsSinceEpoch;
-    var recognitions = await Tflite.runModelOnImage(
-      path: image.path,
-      numResults: 6,
-      threshold: 0.05,
-      imageMean: 127.5,
-      imageStd: 127.5,
-    );
-    setState(() {
-      _recognitions = recognitions;
-      v = recognitions.toString();
-      // dataList = List<Map<String, dynamic>>.from(jsonDecode(v));
-    });
-    print("//////////////////////////////////////////////////");
-    print(_recognitions);
-    // print(dataList);
-    print("//////////////////////////////////////////////////");
-    int endTime = new DateTime.now().millisecondsSinceEpoch;
-    print("Inference took ${endTime - startTime}ms");
-  }
-
 
   @override
   Widget build(BuildContext context) {
