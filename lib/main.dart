@@ -3,17 +3,15 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mcapp/home.dart';
 import 'package:mcapp/onboard.dart';
-import 'package:mcapp/photo_server.dart';
-import 'package:mcapp/splashscreen.dart';
 // import 'package:tflite/tflite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 bool? seenOnboard;
 
@@ -292,7 +290,7 @@ class ImagePickerDemo extends StatefulWidget {
 
 class _ImagePickerDemoState extends State<ImagePickerDemo> {
   final ImagePicker _picker = ImagePicker();
-  final HttpUploadService _httpUploadService = HttpUploadService();
+  var resJson;
   XFile? _image;
   File? file;
 
@@ -332,25 +330,40 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   }
 
 
+
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("http://192.168.0.2:9000/upload"),
+      );
+      Map<String, String> headers = {"Content-type": "multipart/form-data"};
+      int length = await image!.length();
+      request.files.add(
+        http.MultipartFile(
+          'image',
+          image.readAsBytes().asStream(),
+          length,
+          filename: image.path.split('/').last,
+        ),
+      );
+      request.headers.addAll(headers);
+      print("request: " + request.toString());
+      var res = await request.send();
+      http.Response response = await http.Response.fromStream(res);
+
+
       setState(() {
         _image = image;
-        file = File(image!.path);
+        file = File(image.path);
+        resJson = jsonDecode(response.body);
       });
-
-      String filePath = file!.path;
-
-      var responseDataHttp = await _httpUploadService.uploadPhotos([filePath]);
-
-      await presentAlert(context as BuildContext,
-          title: 'Success HTTP',
-          message: responseDataHttp);
     } catch (e) {
       print('Error picking image: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -432,6 +445,7 @@ class _ImageCaptureState extends State<ImageCapture> {
   List<CameraDescription>? cameras; //list out the camera available
   CameraController? imageController; //controller for camera
   XFile? image; //for captured image
+  var resJson;
 
   @override
   void initState() {
@@ -455,6 +469,8 @@ class _ImageCaptureState extends State<ImageCapture> {
       print("NO any camera found");
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -482,9 +498,32 @@ class _ImageCaptureState extends State<ImageCapture> {
                         if(imageController != null){ //check if contrller is not null
                           if(imageController!.value.isInitialized){ //check if controller is initialized
                             image = await imageController!.takePicture(); //capture image
+                            var request = http.MultipartRequest(
+                              'POST',
+                              Uri.parse("http://192.168.0.2:9000/upload"),
+                            );
+                            Map<String, String> headers = {"Content-type": "multipart/form-data"};
+                            int length = await image!.length();
+
+
+                            request.files.add(
+                              http.MultipartFile(
+                                'image',
+                                image!.readAsBytes().asStream(),
+                                length,
+                                filename: image!.path.split('/').last,
+                              ),
+                            );
+                            request.headers.addAll(headers);
+                            print("request: " + request.toString());
+                            var res = await request.send();
+                            http.Response response = await http.Response.fromStream(res);
+
                             setState(() {
+                              resJson = jsonDecode(response.body);
+                            }
                               //update UI
-                            });
+                            );
                           }
                         }
                       } catch (e) {
