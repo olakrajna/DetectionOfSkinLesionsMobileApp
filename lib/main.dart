@@ -1,17 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mcapp/home.dart';
 import 'package:mcapp/onboard.dart';
-// import 'package:tflite/tflite.dart';
+import 'package:mcapp/splashscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 
 bool? seenOnboard;
 
@@ -38,250 +38,11 @@ Future<void> main() async {
       SystemUiMode.manual, overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
   // to load onboard for the first time only
   WidgetsFlutterBinding.ensureInitialized();
-  // cameras = await availableCameras();
-  // secondCameras = await availableCameras();
   SharedPreferences pref = await SharedPreferences.getInstance();
   seenOnboard = pref.getBool('seenOnboard') ?? false;
 
   runApp(const MyApp());
 }
-
-//
-// class CameraScreen extends StatefulWidget {
-//   const CameraScreen({Key? key}) : super(key: key);
-//
-//   @override
-//   State<CameraScreen> createState() => _CameraScreenState();
-// }
-
-// class _CameraScreenState extends State<CameraScreen> {
-//   late CameraController controller;
-//   CameraImage? cameraImage;
-//
-//   CameraController? cameraController;
-//   String output = '';
-//
-//   bool isMalignantAndDangerous() {
-//     return output.startsWith('Malignant') && double.parse(output.substring(output.indexOf(' ') + 1, output.indexOf('%'))) >= 90;
-//   }
-//
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     loadCamera();
-//     loadmodel();
-//   }
-//
-//   loadCamera() {
-//     cameraController = CameraController(cameras[0], ResolutionPreset.high);
-//     cameraController!.initialize().then((value) {
-//       if (!mounted) {
-//         return;
-//       } else {
-//         setState(() {
-//           cameraController!.startImageStream((imageStream) {
-//             cameraImage = imageStream;
-//             runModel();
-//           });
-//         });
-//       }
-//     });
-//   }
-//
-//   runModel() async {
-//     if (cameraImage != null) {
-//       var predictions = await Tflite.runModelOnFrame(
-//           bytesList: cameraImage!.planes.map((plane) {
-//             return plane.bytes;
-//           }).toList(),
-//           imageHeight: cameraImage!.height,
-//           imageWidth: cameraImage!.width,
-//           imageMean: 127.5,
-//           imageStd: 127.5,
-//           rotation: 90,
-//           numResults: 2,
-//           threshold: 0.1,
-//           asynch: true);
-//       predictions!.forEach((element) {
-//         setState(() {
-//           output = '${element['label']} ${(element['confidence'] * 100).toStringAsFixed(2)}%';
-//         });
-//       });
-//     }
-//   }
-//
-//   loadmodel() async {
-//     await Tflite.loadModel(
-//         model: "assets/ml/modelLAST22.tflite", labels: "assets/ml/label.txt");
-//   }
-//
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: Stack(
-//         children: [
-//           Column(children: [
-//             Padding(
-//               padding: EdgeInsets.all(20),
-//               child: Container(
-//                   color: Color.fromRGBO(179, 64, 74, 1),
-//                 height: MediaQuery.of(context).size.height * 0.7,
-//                 width: MediaQuery.of(context).size.width,
-//                 child: !cameraController!.value.isInitialized
-//                     ? Container()
-//                     : AspectRatio(
-//                   aspectRatio: cameraController!.value.aspectRatio,
-//                   child: CameraPreview(cameraController!),
-//                 ),
-//               ),
-//             ),
-//             Text(
-//               output,
-//               style: GoogleFonts.getFont(
-//                 'Montserrat',
-//                 textStyle: TextStyle(
-//                   color: Colors.grey.shade300,
-//                   fontSize: 30,
-//                 ),
-//               ),
-//             ),
-//           ]),
-//           if (isMalignantAndDangerous())
-//             Positioned.fill(
-//               child: Container(
-//                 decoration: BoxDecoration(
-//                   border: Border.all(color: Colors.red, width: 10),
-//                 ),
-//               ),
-//             ),
-//         ],
-//       ),
-//     );
-//   }
-//
-// }
-//
-// class SecondCameraScreen extends StatefulWidget {
-//   const SecondCameraScreen({Key? key}) : super(key: key);
-//
-//   @override
-//   State<SecondCameraScreen> createState() => _SecondCameraScreenState();
-// }
-//
-// class _SecondCameraScreenState extends State<SecondCameraScreen> {
-//
-//   late CameraController secondCameraController;
-//   CameraImage? secondCameraImage;
-//
-//   CameraController? cameraController;
-//   String output = '';
-//
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     loadSecondCamera();
-//     loadSecondModel();
-//   }
-//
-//   loadSecondCamera() {
-//     secondCameraController = CameraController(secondCameras[0], ResolutionPreset.high);
-//     secondCameraController.initialize().then((value) {
-//       if (!mounted) {
-//         return;
-//       } else {
-//         setState(() {
-//           secondCameraController.startImageStream((imageStream) {
-//             secondCameraImage = imageStream;
-//             runSecondModel();
-//           });
-//         });
-//       }
-//     });
-//   }
-//   List<Map<String, dynamic>> results = [];
-//   runSecondModel() async {
-//     if (secondCameraImage != null) {
-//       var predictions = await Tflite.runModelOnFrame(
-//         bytesList: secondCameraImage!.planes.map((plane) {
-//           return plane.bytes;
-//         }).toList(),
-//         imageHeight: secondCameraImage!.height,
-//         imageWidth: secondCameraImage!.width,
-//         imageMean: 127.5,
-//         imageStd: 127.5,
-//         rotation: 90,
-//         numResults: 2,
-//         threshold: 0.1,
-//         asynch: true,
-//       );
-//       results.clear(); // Wyczyść listę wyników przed aktualizacją
-//       predictions!.forEach((element) {
-//         Map<String, dynamic> result = {
-//           'label': element['label'],
-//           'confidence': (element['confidence'] * 100).toStringAsFixed(2),
-//         };
-//         results.add(result); // Dodaj wynik do listy
-//       });
-//
-//       setState(() {
-//         // Aktualizuj zmienną output
-//         output = results.map((result) {
-//           return '${result['label']} ${result['confidence']}%';
-//         }).join('\n');
-//       });
-//     }
-//   }
-//   loadSecondModel() async {
-//     await Tflite.loadModel(
-//       model: "assets/ml/model9v4.tflite",
-//       labels: "assets/ml/labels9.txt",
-//     );
-//   }
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: Stack(
-//         children: [
-//           Column(children: [
-//             Padding(
-//               padding: EdgeInsets.all(20),
-//               child: Container(
-//                   color: Color.fromRGBO(25, 115, 200, 1),
-//                 height: MediaQuery.of(context).size.height * 0.7,
-//                 width: MediaQuery.of(context).size.width,
-//                 child: !secondCameraController!.value.isInitialized
-//                     ? Container()
-//                     : AspectRatio(
-//                   aspectRatio: secondCameraController!.value.aspectRatio,
-//                   child: CameraPreview(secondCameraController!),
-//                 ),
-//               ),
-//             ),
-//             Text(
-//               output,
-//               style: GoogleFonts.getFont(
-//                 'Montserrat',
-//                 textStyle: TextStyle(
-//                   color: Colors.grey.shade300,
-//                   fontSize: 30,
-//                 ),
-//               ),
-//             ),
-//           ])
-//         ],
-//       ),
-//     );
-//   }
-//
-// }
 
 class ImagePickerDemo extends StatefulWidget {
   @override
@@ -290,80 +51,54 @@ class ImagePickerDemo extends StatefulWidget {
 
 class _ImagePickerDemoState extends State<ImagePickerDemo> {
   final ImagePicker _picker = ImagePicker();
-  var resJson;
   XFile? _image;
-  File? file;
+  File? selectedImage;
+  String? message = "";
+
+
+  uploadImage() async {
+    final request = http.MultipartRequest("POST", Uri.parse("https://86cf-153-19-218-102.ngrok.io/upload"));
+    final headers = {"Content-type": "multipart/form-data"};
+    print(selectedImage!
+        .path
+        .split("/")
+        .last);
+    request.files.add(
+      http.MultipartFile('image', selectedImage!.readAsBytes().asStream(),
+          selectedImage!.lengthSync(), 
+          filename: selectedImage!.path.split("/").last));
+    request.headers.addAll(headers);
+    final response = await request.send();
+    http.Response res = await http.Response.fromStream(response);
+    final resJson = jsonDecode(res.body);
+    message = resJson['message'];
+    print(message);
+    if (!mounted) {
+      return; // Wyjście z metody, jeśli widget został już usunięty
+    }
+    setState(() {
+
+    });
+  }
+
 
   @override
   void initState() {
     super.initState();
   }
 
-
-  Future<void> presentAlert(BuildContext context,
-      {String title = '', String message = '', Function()? ok}) {
-    return showDialog(
-        context: context,
-        builder: (c) {
-          return AlertDialog(
-            title: Text('$title'),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Container(
-                  child: Text('$message'),
-                )
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text(
-                  'OK',
-                  // style: greenText,
-                ),
-                onPressed: ok != null ? ok : Navigator.of(context).pop,
-              ),
-            ],
-          );
-        });
-  }
-
-
-
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse("http://192.168.0.2:9000/upload"),
-      );
-      Map<String, String> headers = {"Content-type": "multipart/form-data"};
-      int length = await image!.length();
-      request.files.add(
-        http.MultipartFile(
-          'image',
-          image.readAsBytes().asStream(),
-          length,
-          filename: image.path.split('/').last,
-        ),
-      );
-      request.headers.addAll(headers);
-      print("request: " + request.toString());
-      var res = await request.send();
-      http.Response response = await http.Response.fromStream(res);
-
-
       setState(() {
         _image = image;
-        file = File(image.path);
-        resJson = jsonDecode(response.body);
+        selectedImage = File(image!.path);
       });
+      // Do something with the picked image if needed
     } catch (e) {
       print('Error picking image: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -376,8 +111,8 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
             if (_image != null)
               Image.file(
                 File(_image!.path),
-                height: 200,
-                width: 200,
+                height: 500,
+                width: 300,
                 fit: BoxFit.cover,
               )
             else
@@ -427,6 +162,47 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
                       ],
                     ))),
             SizedBox(height: 20),
+            GestureDetector(
+                onTap: uploadImage,
+                child: Container(
+                    alignment: Alignment.center,
+                    width: 250,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(244, 178, 176, 1),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Color.fromARGB(
+                              247,
+                              0,
+                              0,
+                              0,
+                            ),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: Offset(4, 4)),
+                        BoxShadow(
+                            color: Colors.white,
+                            spreadRadius: 1,
+                            blurRadius: 8,
+                            offset: Offset(-4, -4)),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 10),
+                        Text(
+                          "Upload image ",
+                          style: TextStyle(
+                              color: Colors.white, fontSize: 18),
+                        ),
+                        Icon(Icons.cloud_upload_outlined, color: Colors.white,
+                        ),
+                      ],
+                    ))),
+            SizedBox(height: 20),
           ],
         ),
       ),
@@ -445,17 +221,60 @@ class _ImageCaptureState extends State<ImageCapture> {
   List<CameraDescription>? cameras; //list out the camera available
   CameraController? imageController; //controller for camera
   XFile? image; //for captured image
-  var resJson;
+  bool isCaptured = false; // Zmienna śledząca stan zrobionego zdjęcia
+  bool showCamera = true;
+  String? message = "";
 
   @override
   void initState() {
-    loadImageCamera();
     super.initState();
+    if (mounted) {
+      loadImageCamera();
+    }
   }
+
+  uploadImage() async {
+    if (!mounted) {
+      return; // Wyjście z metody, jeśli widget został już usunięty
+    }
+    if (image != null) {
+      File capturedFile = File(
+          image!.path); // Tworzenie pliku File z przechwyconego obrazu
+      final request = http.MultipartRequest(
+        "POST",
+        Uri.parse("https://86cf-153-19-218-102.ngrok.io/upload"),
+      );
+      final headers = {"Content-type": "multipart/form-data"};
+      print(image!
+          .path
+          .split("/")
+          .last);
+      request.files.add(
+        http.MultipartFile(
+          'image',
+          capturedFile.readAsBytes().asStream(),
+          capturedFile.lengthSync(),
+          filename: capturedFile.path
+              .split("/")
+              .last,
+        ),
+      );
+      request.headers.addAll(headers);
+      final response = await request.send();
+      http.Response res = await http.Response.fromStream(response);
+      final resJson = jsonDecode(res.body);
+      message = resJson['message'];
+      print(message);
+      setState(() {});
+    } else {
+      print('No image captured');
+    }
+  }
+
 
   loadImageCamera() async {
     cameras = await availableCameras();
-    if(cameras != null){
+    if (cameras != null) {
       imageController = CameraController(cameras![0], ResolutionPreset.max);
       //cameras[0] = first camera, change to 1 to another camera
 
@@ -465,72 +284,31 @@ class _ImageCaptureState extends State<ImageCapture> {
         }
         setState(() {});
       });
-    }else{
+    } else {
       print("NO any camera found");
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center( // Wyśrodkowanie całej zawartości
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    height:300,
-                    width:400,
-                    child: imageController == null?
-                    Center(child:Text("Loading Camera...")):
-                    !imageController!.value.isInitialized?
-                    Center(
-                      child: CircularProgressIndicator(),
-                    ):
-                    CameraPreview(imageController!)
-                ),
-                SizedBox(height: 10,),
-                GestureDetector(
-                    onTap: () async{
-                      try {
-                        if(imageController != null){ //check if contrller is not null
-                          if(imageController!.value.isInitialized){ //check if controller is initialized
-                            image = await imageController!.takePicture(); //capture image
-                            var request = http.MultipartRequest(
-                              'POST',
-                              Uri.parse("http://192.168.0.2:9000/upload"),
-                            );
-                            Map<String, String> headers = {"Content-type": "multipart/form-data"};
-                            int length = await image!.length();
-
-
-                            request.files.add(
-                              http.MultipartFile(
-                                'image',
-                                image!.readAsBytes().asStream(),
-                                length,
-                                filename: image!.path.split('/').last,
-                              ),
-                            );
-                            request.headers.addAll(headers);
-                            print("request: " + request.toString());
-                            var res = await request.send();
-                            http.Response response = await http.Response.fromStream(res);
-
-                            setState(() {
-                              resJson = jsonDecode(response.body);
-                            }
-                              //update UI
-                            );
-                          }
-                        }
-                      } catch (e) {
-                        print(e); //show error
-                      }
-                    },
-                    child: Container(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isCaptured)
+              Container(
+                padding: EdgeInsets.all(30),
+                child: image == null
+                    ? Text("No image captured")
+                    : Column(
+                  children: [
+                    Image.file(File(image!.path), height: 500),
+                    SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: uploadImage,
+                      child: Container(
                         alignment: Alignment.center,
                         width: 250,
                         height: 40,
@@ -539,20 +317,17 @@ class _ImageCaptureState extends State<ImageCapture> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                                color: Color.fromARGB(
-                                  247,
-                                  0,
-                                  0,
-                                  0,
-                                ),
-                                spreadRadius: 2,
-                                blurRadius: 8,
-                                offset: Offset(4, 4)),
+                              color: Color.fromARGB(247, 0, 0, 0),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: Offset(4, 4),
+                            ),
                             BoxShadow(
-                                color: Colors.white,
-                                spreadRadius: 1,
-                                blurRadius: 8,
-                                offset: Offset(-4, -4)),
+                              color: Colors.white,
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: Offset(-4, -4),
+                            ),
                           ],
                         ),
                         child: Row(
@@ -560,25 +335,128 @@ class _ImageCaptureState extends State<ImageCapture> {
                           children: [
                             SizedBox(width: 10),
                             Text(
-                              "Capture ",
+                              "Upload image ",
                               style: TextStyle(
-                                  color: Colors.white, fontSize: 18),
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
                             ),
-                            Icon(Icons.camera_outlined, color: Colors.white,
+                            Icon(Icons.cloud_upload_outlined, color: Colors.white),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isCaptured = false;
+                          showCamera = true; // Pokaż ponownie podgląd kamery
+                        });
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 250,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(244, 178, 176, 1),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(247, 0, 0, 0),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: Offset(4, 4),
+                            ),
+                            BoxShadow(
+                              color: Colors.white,
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: Offset(-4, -4),
                             ),
                           ],
-                        ))),
-                Container( //show captured image
-                  padding: EdgeInsets.all(30),
-                  child: image == null?
-                  Text("No image captured"):
-                  Image.file(File(image!.path), height: 300,),
-                  //display captured image
-                )
-              ]
-          )
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 10),
+                            Text(
+                              "Retake Photo",
+                              style: TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                            Icon(Icons.refresh_outlined, color: Colors.white),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (!isCaptured && showCamera)
+              Container(
+                height: 500,
+                width: 300,
+                child: imageController == null
+                    ? Center(child: Text("Loading Camera..."))
+                    : !imageController!.value.isInitialized
+                    ? Center(child: CircularProgressIndicator())
+                    : CameraPreview(imageController!),
+              ),
+            SizedBox(height: 20),
+            if (!isCaptured && showCamera)
+              GestureDetector(
+                onTap: () async {
+                  try {
+                    if (imageController != null &&
+                        imageController!.value.isInitialized) {
+                      image = await imageController!.takePicture();
+                      setState(() {
+                        isCaptured = true;
+                        showCamera = false; // Ukryj aparat po zrobieniu zdjęcia
+                      });
+                    }
+                  } catch (e) {
+                    print(e);
+                  }
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 250,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(244, 178, 176, 1),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromARGB(247, 0, 0, 0),
+                        spreadRadius: 2,
+                        blurRadius: 8,
+                        offset: Offset(4, 4),
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        spreadRadius: 1,
+                        blurRadius: 8,
+                        offset: Offset(-4, -4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(width: 10),
+                      Text(
+                        "Capture",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      Icon(Icons.camera_outlined, color: Colors.white),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
-
     );
   }
 }
