@@ -71,7 +71,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     message = resJson['message'];
     print(message);
     if (!mounted) {
-      return; // Wyjście z metody, jeśli widget został już usunięty
+      return;
     }
     setState(() {
 

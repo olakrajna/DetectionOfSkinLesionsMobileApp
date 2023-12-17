@@ -39,7 +39,6 @@ class _OnBoardState extends State<OnBoard> {
   Future setSeenonboard() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     seenOnboard = await prefs.setBool('seenOnboard', true);
-    // this will set seenOnboard to true when running onboard page for first time.
   }
 
   @override

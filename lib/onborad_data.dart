@@ -19,7 +19,7 @@ List<OnBoarding> onboardingContents = [
   OnBoarding(
     title: '1. Camera settings:',
     image: 'assets/images/smartphone.png',
-    description: "Use auto mode or special mode to shoot close-up subjects. Turn off flash mode to avoid reflections on the skin. ",
+    description: "Take close-up photos of the objects and wait for the image to focus on the subject. Avoid glare from light on the patient's skin. ",
 
   ),
   OnBoarding(
@@ -37,7 +37,7 @@ List<OnBoarding> onboardingContents = [
   OnBoarding(
     title: '4. Use the app',
     image: 'assets/images/dermatology.png',
-    description: "Make sure you are close enough to get a detailed image, but at the same time not too close to avoid distortion. Hover over the change and wait for the result.",
+    description: "Make sure you are close enough to get a detailed image, but not too close to avoid distortion. Take a photo. You also have the option of uploading photos from the gallery.",
 
   ),
 ];

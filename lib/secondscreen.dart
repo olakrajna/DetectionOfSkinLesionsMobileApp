@@ -1,6 +1,5 @@
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mcapp/main.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -29,7 +28,7 @@ class _SecondScreenState extends State<SecondScreen> {
     SizedBox(height: 15),
     Padding(padding: EdgeInsets.symmetric(horizontal: 40)),
     Text(
-      'SELECT CAMERA',
+      'IMAGE SELECTION METHOD',
       textAlign: TextAlign.center,
       style: GoogleFonts.getFont(
         'Montserrat',
@@ -43,7 +42,7 @@ class _SecondScreenState extends State<SecondScreen> {
     SizedBox(height: 20,),
               SizedBox(height: 10.0),
               Container(
-              height: MediaQuery.of(context).size.height/1.5,
+              height: MediaQuery.of(context).size.height/2.20,
               width: 325,
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(color: Color.fromRGBO(244, 178, 176, 1), borderRadius: BorderRadius.circular(10),
@@ -52,7 +51,7 @@ class _SecondScreenState extends State<SecondScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'SKIN CANCER CLASSIFICATION CAMERA',
+                      'SKIN CANCER CLASSIFICATION',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.getFont(
                         'Montserrat',
@@ -66,7 +65,7 @@ class _SecondScreenState extends State<SecondScreen> {
                     ),
                     SizedBox(height: 10,),
                     Text(
-                      "This camera allows for the classification of the following conditions: actinic keratosis, basal cell carcinoma, squamous cell carcinoma, melanoma, pigmented benign keratosis, seborrheic keratosis, dermatofibroma, and vascular lesions.",
+                      "This apparatus enables accurate classification of melanoma skin cancer, distinguishing between malignant and benign forms of the disease.",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.getFont(
                         'Montserrat',
