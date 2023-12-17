@@ -39,7 +39,6 @@ class _OnBoardState extends State<OnBoard> {
   Future setSeenonboard() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     seenOnboard = await prefs.setBool('seenOnboard', true);
-    // this will set seenOnboard to true when running onboard page for first time.
   }
 
   @override
@@ -88,7 +87,6 @@ class _OnBoardState extends State<OnBoard> {
                         textAlign: TextAlign.center,
                       ),
                   ),
-
                       SizedBox(
                         height: sizeV * 5,
                       ),
@@ -116,7 +114,7 @@ class _OnBoardState extends State<OnBoard> {
                         textAlign: TextAlign.center,
                       ),),
                       SizedBox(
-                        height: sizeV * 5,
+                        height: 10,
                       ),
                                         ],
                   ),

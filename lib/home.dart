@@ -1,7 +1,6 @@
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mcapp/main.dart';
 import 'package:mcapp/secondscreen.dart';
 import 'package:mcapp/onboard.dart';
 import 'package:page_transition/page_transition.dart';
@@ -128,30 +127,13 @@ class _HomeState extends State<Home> {
                               decoration: BoxDecoration(
                                 color: Color.fromRGBO(244, 178, 176, 1),
                                 borderRadius: BorderRadius.circular(12),
-                                // boxShadow: [
-                                //   BoxShadow(
-                                //       color: Color.fromARGB(
-                                //         247,
-                                //         0,
-                                //         0,
-                                //         0,
-                                //       ),
-                                //       spreadRadius: 2,
-                                //       blurRadius: 8,
-                                //       offset: Offset(4, 4)),
-                                //   BoxShadow(
-                                //       color: Colors.white,
-                                //       spreadRadius: 1,
-                                //       blurRadius: 8,
-                                //       offset: Offset(-4, -4)),
-                                // ],
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(width: 10),
                                   Text(
-                                    "Camera",
+                                    "Classify skin lesion",
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 18),
                                   ),
@@ -177,23 +159,6 @@ class _HomeState extends State<Home> {
                               decoration: BoxDecoration(
                                 color: Color.fromRGBO(244, 178, 176, 1),
                                 borderRadius: BorderRadius.circular(12),
-                                // boxShadow: [
-                                //   BoxShadow(
-                                //       color: Color.fromARGB(
-                                //         247,
-                                //         0,
-                                //         0,
-                                //         0,
-                                //       ),
-                                //       spreadRadius: 2,
-                                //       blurRadius: 8,
-                                //       offset: Offset(4, 4)),
-                                //   BoxShadow(
-                                //       color: Colors.white,
-                                //       spreadRadius: 1,
-                                //       blurRadius: 8,
-                                //       offset: Offset(-4, -4)),
-                                // ],
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
