@@ -4,13 +4,10 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mcapp/home.dart';
 import 'package:mcapp/onboard.dart';
-import 'package:mcapp/splashscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
 
 bool? seenOnboard;
@@ -54,10 +51,10 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   XFile? _image;
   File? selectedImage;
   String? message = "";
-
+  bool _imageSelected = false;
 
   uploadImage() async {
-    final request = http.MultipartRequest("POST", Uri.parse("https://86cf-153-19-218-102.ngrok.io/upload"));
+    final request = http.MultipartRequest("POST", Uri.parse("https://08de-153-19-218-102.ngrok.io/upload"));
     final headers = {"Content-type": "multipart/form-data"};
     print(selectedImage!
         .path
@@ -93,6 +90,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       setState(() {
         _image = image;
         selectedImage = File(image!.path);
+        _imageSelected = true;
       });
       // Do something with the picked image if needed
     } catch (e) {
@@ -116,92 +114,133 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
                 fit: BoxFit.cover,
               )
             else
-              Text('No image selected',
+              Text(
+                'No image selected',
                 style: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 20),),
-            SizedBox(height: 20),
-            GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                    alignment: Alignment.center,
-                    width: 250,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(244, 178, 176, 1),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Color.fromARGB(
-                              247,
-                              0,
-                              0,
-                              0,
-                            ),
-                            spreadRadius: 2,
-                            blurRadius: 8,
-                            offset: Offset(4, 4)),
-                        BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: Offset(-4, -4)),
-                      ],
+                  color: Colors.grey.shade400,
+                  fontSize: 20,
+                ),
+              ),
+            SizedBox(height: 5),
+            if (_imageSelected)
+              Column(
+                children: [
+                  Text(
+                    "Classification info",
+                    style: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 20,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 10),
-                        Text(
-                          "Pick image from gallery ",
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 18),
-                        ),
-                        Icon(Icons.linked_camera_outlined, color: Colors.white,
-                        ),
-                      ],
-                    ))),
-            SizedBox(height: 20),
-            GestureDetector(
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    message ?? '',
+                    style: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                ],
+              ),
+            if (_imageSelected)
+              GestureDetector(
                 onTap: uploadImage,
                 child: Container(
-                    alignment: Alignment.center,
-                    width: 250,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(244, 178, 176, 1),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Color.fromARGB(
-                              247,
-                              0,
-                              0,
-                              0,
-                            ),
-                            spreadRadius: 2,
-                            blurRadius: 8,
-                            offset: Offset(4, 4)),
-                        BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: 1,
-                            blurRadius: 8,
-                            offset: Offset(-4, -4)),
-                      ],
+                  alignment: Alignment.center,
+                  width: 250,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(244, 178, 176, 1),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromARGB(
+                          247,
+                          0,
+                          0,
+                          0,
+                        ),
+                        spreadRadius: 2,
+                        blurRadius: 8,
+                        offset: Offset(4, 4),
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        spreadRadius: 1,
+                        blurRadius: 8,
+                        offset: Offset(-4, -4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(width: 10),
+                      Text(
+                        "Upload image",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Icon(
+                        Icons.cloud_upload_outlined,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            SizedBox(height: 20),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                alignment: Alignment.center,
+                width: 250,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(244, 178, 176, 1),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(
+                        247,
+                        0,
+                        0,
+                        0,
+                      ),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: Offset(4, 4),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 10),
-                        Text(
-                          "Upload image ",
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 18),
-                        ),
-                        Icon(Icons.cloud_upload_outlined, color: Colors.white,
-                        ),
-                      ],
-                    ))),
+                    BoxShadow(
+                      color: Colors.white,
+                      spreadRadius: 1,
+                      blurRadius: 8,
+                      offset: Offset(-4, -4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 10),
+                    Text(
+                      "Pick image from gallery",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Icon(
+                      Icons.linked_camera_outlined,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             SizedBox(height: 20),
           ],
         ),
@@ -218,10 +257,10 @@ class ImageCapture extends StatefulWidget{
 
 class _ImageCaptureState extends State<ImageCapture> {
 
-  List<CameraDescription>? cameras; //list out the camera available
-  CameraController? imageController; //controller for camera
-  XFile? image; //for captured image
-  bool isCaptured = false; // Zmienna śledząca stan zrobionego zdjęcia
+  List<CameraDescription>? cameras;
+  CameraController? imageController;
+  XFile? image;
+  bool isCaptured = false;
   bool showCamera = true;
   String? message = "";
 
@@ -235,14 +274,14 @@ class _ImageCaptureState extends State<ImageCapture> {
 
   uploadImage() async {
     if (!mounted) {
-      return; // Wyjście z metody, jeśli widget został już usunięty
+      return;
     }
     if (image != null) {
       File capturedFile = File(
           image!.path); // Tworzenie pliku File z przechwyconego obrazu
       final request = http.MultipartRequest(
         "POST",
-        Uri.parse("https://86cf-153-19-218-102.ngrok.io/upload"),
+        Uri.parse("https://08de-153-19-218-102.ngrok.io/upload"),
       );
       final headers = {"Content-type": "multipart/form-data"};
       print(image!
@@ -305,7 +344,17 @@ class _ImageCaptureState extends State<ImageCapture> {
                     : Column(
                   children: [
                     Image.file(File(image!.path), height: 500),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
+                    Text("Classification info",
+                      style: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 20),),
+                    SizedBox(height: 5),
+                    Text(message ?? '',
+                      style: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 20),),
+                    SizedBox(height: 5),
                     GestureDetector(
                       onTap: uploadImage,
                       child: Container(
@@ -346,7 +395,7 @@ class _ImageCaptureState extends State<ImageCapture> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
                         setState(() {
