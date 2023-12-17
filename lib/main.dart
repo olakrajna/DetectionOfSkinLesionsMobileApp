@@ -54,7 +54,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   bool _imageSelected = false;
 
   uploadImage() async {
-    final request = http.MultipartRequest("POST", Uri.parse("https://08de-153-19-218-102.ngrok.io/upload"));
+    final request = http.MultipartRequest("POST", Uri.parse("https://2d00-153-19-218-102.ngrok.io/upload"));
     final headers = {"Content-type": "multipart/form-data"};
     print(selectedImage!
         .path
@@ -281,7 +281,7 @@ class _ImageCaptureState extends State<ImageCapture> {
           image!.path); // Tworzenie pliku File z przechwyconego obrazu
       final request = http.MultipartRequest(
         "POST",
-        Uri.parse("https://08de-153-19-218-102.ngrok.io/upload"),
+        Uri.parse("https://2d00-153-19-218-102.ngrok.io/upload"),
       );
       final headers = {"Content-type": "multipart/form-data"};
       print(image!

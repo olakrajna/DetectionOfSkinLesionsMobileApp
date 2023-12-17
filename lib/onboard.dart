@@ -87,7 +87,6 @@ class _OnBoardState extends State<OnBoard> {
                         textAlign: TextAlign.center,
                       ),
                   ),
-
                       SizedBox(
                         height: sizeV * 5,
                       ),
@@ -115,7 +114,7 @@ class _OnBoardState extends State<OnBoard> {
                         textAlign: TextAlign.center,
                       ),),
                       SizedBox(
-                        height: sizeV * 5,
+                        height: 10,
                       ),
                                         ],
                   ),
